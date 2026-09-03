@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Flame, Sparkles, TrendingUp, ShieldCheck, ShieldOff } from "lucide-react";
+import { Users, Flame, Sparkles, TrendingUp, ShieldCheck, ShieldOff, ChevronRight } from "lucide-react";
 import { TOKENS } from "../theme.js";
 import BackRow from "../components/BackRow.jsx";
 import StatCard from "../components/StatCard.jsx";
@@ -65,7 +65,7 @@ function RoleControl({ user, isSelf, onToggleRole }) {
   );
 }
 
-export default function AdminStatsScreen({ loading, error, stats, currentUserId, onToggleRole, onBack }) {
+export default function AdminStatsScreen({ loading, error, stats, currentUserId, onToggleRole, onOpenUser, onBack }) {
   return (
     <div style={{ padding: "8px 20px 0" }}>
       <BackRow onBack={onBack} label="Панель администратора" />
@@ -120,7 +120,11 @@ export default function AdminStatsScreen({ loading, error, stats, currentUserId,
           <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 30 }}>
             {stats.users.map((u) => (
               <div key={u.id} style={{ background: TOKENS.surface, border: `1px solid ${TOKENS.border}`, borderRadius: 10, padding: "10px 12px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <button
+                  className="quest-btn"
+                  onClick={() => onOpenUser(u.id)}
+                  style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", background: "transparent", padding: 0, textAlign: "left", color: TOKENS.text }}
+                >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, display: "flex", alignItems: "center", gap: 6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {u.name} {u.role === "admin" && <ShieldCheck size={12} color={TOKENS.gold} />}
@@ -131,7 +135,8 @@ export default function AdminStatsScreen({ loading, error, stats, currentUserId,
                     <div style={{ fontSize: 12, color: TOKENS.gold, fontWeight: 700 }}>{u.xp} XP</div>
                     <div style={{ fontSize: 11, color: TOKENS.textMuted }}>серия {u.streak} · {formatDate(u.updatedAt)}</div>
                   </div>
-                </div>
+                  <ChevronRight size={16} color={TOKENS.textMuted} style={{ flexShrink: 0 }} />
+                </button>
                 <RoleControl user={u} isSelf={u.id === currentUserId} onToggleRole={onToggleRole} />
               </div>
             ))}

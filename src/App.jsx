@@ -25,7 +25,7 @@ import {
   getEffectiveRobotLevels,
   getEffectiveCodeLevels,
 } from "./utils/contentHelpers.js";
-import { computeAdminStats } from "./utils/adminStats.js";
+import { computeAdminStats, computeUserDetail } from "./utils/adminStats.js";
 
 import Confetti from "./components/Confetti.jsx";
 import TopBar from "./components/TopBar.jsx";
@@ -51,6 +51,7 @@ import FailedScreen from "./screens/FailedScreen.jsx";
 import StageResultScreen from "./screens/StageResultScreen.jsx";
 import ProfileScreen from "./screens/ProfileScreen.jsx";
 import AdminStatsScreen from "./screens/AdminStatsScreen.jsx";
+import AdminUserScreen from "./screens/AdminUserScreen.jsx";
 
 export default function OgeInformQuest() {
   const [session, setSession] = useState(null);
@@ -69,6 +70,7 @@ export default function OgeInformQuest() {
   const [adminStats, setAdminStats] = useState(null);
   const [adminStatsLoading, setAdminStatsLoading] = useState(false);
   const [adminStatsError, setAdminStatsError] = useState("");
+  const [adminUserId, setAdminUserId] = useState(null);
 
   const [theoryIdx, setTheoryIdx] = useState(0);
 
@@ -270,6 +272,11 @@ export default function OgeInformQuest() {
     } finally {
       setAdminStatsLoading(false);
     }
+  }
+
+  function openAdminUser(targetUserId) {
+    setAdminUserId(targetUserId);
+    setScreen("adminUser");
   }
 
   async function toggleUserRole(targetUserId, nextRole) {
@@ -1138,9 +1145,22 @@ export default function OgeInformQuest() {
           stats={adminStats}
           currentUserId={userId}
           onToggleRole={toggleUserRole}
+          onOpenUser={openAdminUser}
           onBack={() => setScreen("profile")}
         />
       )}
+
+      {screen === "adminUser" && profile?.role === "admin" && (() => {
+        const target = adminStats?.users.find((u) => u.id === adminUserId);
+        if (!target) return null;
+        return (
+          <AdminUserScreen
+            user={target}
+            detail={computeUserDetail(target.data)}
+            onBack={() => setScreen("adminStats")}
+          />
+        );
+      })()}
 
       <GlobalStyle />
     </div>
